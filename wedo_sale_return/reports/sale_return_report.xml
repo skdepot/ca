@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="report_sale_return_order_document">
+    <t t-call="web.external_layout">
+        <div class="text-left" style="text-align:left; float:left;">
+
+            <t t-set="address">
+            <B>
+                <div  style='font-size: 20px;font-weight: bold; text-align:left; '>
+                    <span style='text-align:left;'>Customer: </span>
+                    <span style='text-align:left;' t-field="o.partner_id"/>
+                </div>
+            </B>
+            <p t-if="o.partner_id.vat"><t t-esc="o.company_id.country_id.vat_label or 'Tax ID'"/>: <span t-field="o.partner_id.vat"/></p>
+            </t>
+                     </div>
+        <div class="oe_structure"/>
+             <div class="text-right" style="margin-left:150px;margin-right:200px;">
+            <div class="row justify-content-end mb16">
+                <div class="col-4" name="right_box">
+                    <div t-if="o.picking_ids">
+                    <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', map(lambda x: x.name, o.picking_ids[0])  , 600, 100)" style="width:300px;height:50px;" alt="Barcode"/>
+                </div>
+                </div>
+
+            </div>
+            </div>
+
+        <div class="page">
+
+
+            <h2> Sale Return  #<span t-field="o.name"/></h2>
+                <div t-if="o.sale_order_id"> <span t-field="o.sale_order_id.name"/></div>
+
+              <div id="informations" class="row mt32 mb32">
+                <div t-if="o.user_id" class="col-3 bm-2">
+                    <strong>Sale Representative:</strong>
+                    <p t-field="o.user_id" class="m-0"/>
+                </div>
+
+                <div t-if="o.date_order" class="col-3 bm-2">
+                    <strong>Order Date:</strong>
+                    <p t-field="o.date_order" class="m-0"/>
+                </div>
+
+
+                <div t-if="o.picking_type_id" class="col-3 bm-2">
+                    <strong>Delivery To :</strong>
+                    <p t-field="o.picking_type_id" class="m-0"/>
+                </div>
+            </div>
+
+            <table class="table table-sm o_main_table">
+                <thead>
+                    <tr>
+                        <th><strong>LN</strong></th>
+        	            <th><strong>Barcode</strong></th>
+                        <th name="th_description"><strong>Description</strong></th>
+                        <th name="th_quantity" class="text-right"><strong>Return Qty</strong></th>
+                        <th name="th_price_unit" class="text-right"><strong>Unit Price</strong></th>
+                        <th name="th_amount" class="text-right"><strong>Amount</strong></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-set="current_subtotal" t-value="0"/>
+                    <t t-foreach="o.order_line_ids" t-as="line">
+                        <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
+
+                        <tr>
+                                <td>
+                                   <span t-esc="line_index+1"/>
+                                </td>
+
+                                <td>
+                                    <span t-field="line.product_id.barcode"/>
+                                </td>
+                                <td id="product">
+                                    <span t-field="line.product_id.name"/>
+                                </td>
+
+                                <td class="text-right">
+                                    <span t-field="line.qty_return"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="line.price_unit"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="line.price_subtotal"
+                                        t-options='{"widget": "monetary", "display_currency": line.currency_id}'/>
+                                </td>
+
+                        </tr>
+
+                    </t>
+                </tbody>
+            </table>
+
+           <br></br>
+    		<table style='width:95%' >
+                <tbody>
+    			<tr>
+    				<td>
+
+			    		<strong> Note : <br></br>
+			    		 Price Unable To Change  <br></br></strong>
+			    	</td>
+
+
+			    </tr>
+
+                  <div style="position:absolute;top:850px; page-break-before: always;">
+
+                    <table  class="table table-borderless" style="margin-left:20px;width:800px">
+                        <br></br>
+                            <tbody>
+                                <tr>
+                                    <td  class="text-left">_________________<br></br> Created by  <strong><span t-field="o.create_uid" /> </strong> </td>
+                                    <td  class="text-left"> _________________<br></br> Customer sign </td>
+                                    <td  class="text-left"> _________________<br></br> Approved by </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size:12px;" class="text-left"> Printed on  <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>  by <span t-esc="request.env.user.name"/>   </td>
+                                </tr>
+                            </tbody>
+                    </table>
+                </div>
+                </tbody>
+			</table>
+
+            <div class="oe_structure"/>
+        </div>
+    </t>
+</template>
+
+<template id="report_sale_return_pdf">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="wedo_sale_return.report_sale_return_order_document" t-lang="o.partner_id.lang"/>
+        </t>
+    </t>
+</template>
+</odoo>

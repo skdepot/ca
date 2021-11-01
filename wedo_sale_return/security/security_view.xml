@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+        <record model="ir.module.category" id="sale_return_category">
+            <field name="name">Sale Return</field>
+        </record>
+
+
+        <record id="group_sale_return_user" model="res.groups">
+            <field name="name">Sale Return User</field>
+            <field name="category_id" ref="wedo_sale_return.sale_return_category"/>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+        </record>
+
+   <record id="group_sale_return_manager" model="res.groups">
+            <field name="name">Sale Return Manager</field>
+            <field name="category_id" ref="wedo_sale_return.sale_return_category"/>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+            <field name="implied_ids" eval="[(4,ref('group_sale_return_user'))]"/>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,13 @@
+<odoo>
+    <data>
+       <report
+            string="Sale Return"
+            id="action_report_sale_return_order"
+            model="sale.return"
+            report_type="qweb-pdf"
+            name="wedo_sale_return.report_sale_return_pdf"
+            file="wedo_sale_return.report_sale_return_pdf"
+            menu="True"
+            print_report_name="'Sale Return %s'% (object.name)"/>
+    </data>
+</odoo>
